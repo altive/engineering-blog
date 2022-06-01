@@ -54,6 +54,14 @@ https://github.com/altive/flutter_app_template/tree/main/packages/flutter_app/li
 - `Scaffold` を配置し、 `appBar` や `body` 、 `floatingActionButton` などには分離したクラスを指定する。
     - `Page` からは `appBar` のタイトルや `body` の中身、 `floatingActionButton` がどう動くかなどは知らなくて良い状態とする。
 
+:::message
+`Page` or `Screen` ?
+プロジェクトによって、ページ（画面）を表現するWidgetの命名に違いがありますよね。
+`Page` を採用した理由としては以下の通りです。
+- `flutter create` して最初にできあがる画面が `homePage` であること（skeletonテンプレートでは `SettingView` になっていますが…）
+- Flutterでページ（画面）とセットで使うことが多い `MaterialPageRoute` や `MaterialPage` 、または `CupertinoPageRoute` の名前に `Page` が使われていること
+:::
+
 #### 具体例
 home_page.dart
 ```dart
