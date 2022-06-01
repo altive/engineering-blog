@@ -6,6 +6,11 @@ topics: [flutter]
 published: true
 ---
 
+この方針策定のためのディスカッションページ
+https://github.com/orgs/altive/discussions/1
+
+---
+
 当方針は [@naipaka](https://zenn.dev/naipaka) さんにより起案・骨子考案いただきました！ありがとうございます👏
 
 [@keimiya_325](https://twitter.com/keimiya_325) さん、ディスカッションへの参加ありがとうございます🙌
