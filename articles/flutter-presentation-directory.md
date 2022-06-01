@@ -15,6 +15,11 @@ https://github.com/orgs/altive/discussions/1
 
 [@keimiya_325](https://twitter.com/keimiya_325) さん、ディスカッションへの参加ありがとうございます🙌
 
+:::message
+当記事は [村松龍之介@riscait](https://zenn.dev/riscait) が更新しています。
+あくまで弊社での取り決めを一例として共有するものであり、広く推奨するものではありません。 また、弊社チームの成熟等により、随時再検討やアップデートが行われる可能性が高いです。
+:::
+
 # Flutterアプリ開発におけるWidgetの構成方針
 
 チームでFlutterアプリ開発に参画することが増えて、人ぞれぞれWidgetの粒度や整理の仕方が違うことを実感しました。
