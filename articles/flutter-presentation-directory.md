@@ -1,43 +1,48 @@
 ---
-title: "FlutterアプリのPresentation層構成"
+title: "FlutterアプリのPresentation層構成方針"
 emoji: "🏗"
 type: "idea" # tech: 技術記事 / idea: アイデア
 topics: [flutter]
-published: false
+published: true
 ---
 
-@naipaka さん起案ありがとうございます👏
+当方針は @naipaka により起案いただきました！ありがとうございます👏
+
+[@keimiya_325](https://twitter.com/keimiya_325) さん、ディスカッションへの参加ありがとうございます🙌
 
 # Flutterアプリ開発におけるWidgetの構成方針
 
-Widgetの構成の方針をチームとして決めたいです🙋‍♂️
-
-具体的には`XxxPage`/`XxxView`/`XxxButton`などの各コンポーネントの分け方を定義したいです。
+チームでFlutterアプリ開発に参画することが増えて、人ぞれぞれWidgetの粒度や整理の仕方が違うことを実感しました。
+何にでも適用できる優れた正解と呼べる構成はおそらく存在しませんが、会社やチームで統一された方針があれば良い指針となりそうです。
 
 ## 構成についてチームで方針が決まっているメリット
 
-- 実装の際にWidgetの分離に迷いにくくなる
-- レビューしやすくなる
-- 責務が明確に分けられていてテストが書きやすくなる
+- 実装の際に `Widget` の構成や命名、分離の仕方に迷いにくくなる
+- 画面や実装者によって実装がバラバラにならないので、プルリクエストがレビューしやすくなる
+- 責務が明確に分けらやすいので、テストが書きやすくなる
+
 などなど…
 
-みなさんは普段どんな構成で考えて実装していますでしょうか？👀
-自分はまだこれといった形が定められていないので、みなさんの意見を聞きながら方針が決められたら嬉しいです！
+## サンプルリポジトリ
+方針を実際に適用したサンプルとなるリポジトリです。
 
-以下Altiveの[flutter_app_template](https://github.com/altive/flutter_app_template)をもとに、自分が普段考えている構成を記載しましたので、「こうした方がよさそう」や「自分ならこういう構成にする」などあれば、コメントいただきたいです！🙏
-（そもそもここまで決めなくても良いなどの意見も歓迎です！🙇‍♂️）
+https://github.com/altive/flutter_app_template/tree/main/packages/flutter_app/lib/presentation/
+
+主にUIを担当する `presentation` ディレクトリ以下に適用してあります。
+
+（ `riverpod_examples` など、一部本のサンプルページとして使用しているページは適用外としています）
 
 ---
 
 ## 構成の概要
 
-`Page`とその他画面構成要素`でクラス及びファイルを分ける。
+モバイルアプリでは画面、Webではページを表す `Page` とその他の画面構成要素でクラス及びファイルを分ける。
 
 ### Page
-- 各画面と1対1の部品
+- 各画面（ページ）と1対1となるWidget
 - 画面を構成する枠組み部分として定義
-- Scaffoldを配置し、appBarやbody、floatingActionButtonなどには分離したクラスを設定
-    - PageからはappBarのタイトルやbodyの中身、floatingActionButtonがどう動くかなどは知らなくて良い状態とする
+- `Scaffold` を配置し、 `appBar` や `body` 、 `floatingActionButton` などには分離したクラスを指定する。
+    - `Page` からは `appBar` のタイトルや `body` の中身、 `floatingActionButton` がどう動くかなどは知らなくて良い状態とする。
 
 #### 具体例
 home_page.dart
@@ -48,79 +53,83 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: HomeAppBar(),
+      appBar: HomePageAppBar(),
       body: const SafeArea(
-        child: HomeBody(),
+        child: HomePageBody(),
       ),
-      floatingActionButton: const HomeFloatingActionButton(),
+      floatingActionButton: const HomePageFloatingActionButton(),
     );
   }
 }
 ```
 
 ### Body
-- 各画面と1対1の部品
-- 画面を構成する中身部分として定義
-- Scaffoldのbody部分を管理
-- 基本各要素を参照するだけ
-    - Bodyからは各要素がどのように働くかを知らない状態とする
+- 各画面（ページ）と1対1となるWidget
+- 画面を構成する、メインのコンテンツ部分として定義
+- `Scaffold` の `body`部分を管理
+- `Page` の第一構成要素であることを表すため、 `XxxPageBody` のようにページ名と `Page` を含む命名とする
+- さらなる各コンポーネントを参照する
+  - `Body` からは各要素がどのように働くかを知らない状態とする
 
 #### 具体例
-home_body.dart
+home_page_body.dart
 ```dart
-class HomeBody extends StatelessWidget {
-  const HomeBody({super.key});
+class HomePageBody extends StatelessWidget {
+  const HomePageBody({super.key});
 
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: 16,
-        ),
-        child: Column(
-          children: const [
-            HomeHeader(),
-            HomeTodoList(),
-            HomeFooter(),
-          ],
-        ),
+      padding: const EdgeInsets.symmetric(
+        horizontal: 16,
+      ),
+      child: Column(
+        children: const [
+          HomeHeader(),
+          HomeTodoListView(),
+          HomeFooter(),
+        ],
       ),
     );
   }
 }
 ```
 
-### その他画面構成要素
-- BodyやAppBar等にのせる画面要素
-- まとまりとして認識できるコンポーネント単位で分ける
+### AppBar , FloatingActionButton
+- 各画面（ページ）と1対1となるWidget
+- `Scaffold` の `appBar` や `floatingActionButton` 部分を担当
+- `Page` の第一構成要素であることを表すため、 `XxxPageAppBar` や `XxxPageFloatingActionButton` のようにページ名と `Page` を含む命名とする
+- さらなる各コンポーネントを参照する
+
+### その他画面構成要素（components）
+- `Body` や `AppBar` 等でから呼び出して使用するWidget
+- まとまりとして認識できる部品単位で分ける
+- `Page` の第一構成要素ではないので、命名に `Page` は含めない
 
 ## ディレクトリ構成例
 
-ホーム画面にTODOリストを表示するような画面をイメージしています。
+アプリのホーム画面（ページ）にTODOリストを表示するような画面をイメージしています。
 
 ```
 .
 ├── main.dart
 └── presentation
     ├── app.dart
-    ├── components
-    │   ├── link_text.dart
-    │   └── sign_in_button.dart
+    ├── components // <- アプリ全体や複数の画面で使用するようなコンポーネントWidget
     ├── pages
     │   └── home
     │       ├── components
-    │       │   ├── home_app_bar.dart
-    │       │   ├── home_body.dart
-    │       │   ├── home_floating_action_button.dart
+    │       │   ├── home_page_app_bar.dart
+    │       │   ├── home_page_body.dart
+    │       │   ├── home_page_floating_action_button.dart
     │       │   ├── home_footer.dart
     │       │   ├── home_header.dart
-    │       │   ├── home_todo_list.dart
+    │       │   ├── home_todo_list_view.dart
     │       │   └── home_todo_list_item.dart
     │       └── home_page.dart
     ├── router
-    └── theme
+    └── style
 ```
 
-※ presentation以外と`page`/`components`以外は省略しています。
+※ `presentation` 外と`page`/`components`以外は省略して表記しています。
 
